@@ -142,4 +142,4 @@ When the program was finished, we will get a traning model file in `/models/`.
 
 | Metrics    | value |
 | ------------|:-------------:|
-|Private Score             |     <img src="image/mAP.png" width=400>          |
+|Private Score             |     <img src="image/result.jpg" width=400>          |
