@@ -38,20 +38,19 @@ from torch.jit.annotations import List, Optional, Tuple
 from torch.nn.parameter import Parameter
 
 
-
 class FrozenBatchNorm2d(torch.nn.Module):
-
-
     def __init__(
-            self,
-            num_features: int,
-            eps: float = 1e-5,
-            n: Optional[int] = None,
+        self,
+        num_features: int,
+        eps: float = 1e-5,
+        n: Optional[int] = None,
     ):
         # n=None for backward-compatibility
         if n is not None:
-            warnings.warn("`n` argument is deprecated and has been renamed `num_features`",
-                          DeprecationWarning)
+            warnings.warn(
+                "`n` argument is deprecated and has been renamed `num_features`",
+                DeprecationWarning,
+            )
             num_features = n
         super(FrozenBatchNorm2d, self).__init__()
         self.eps = eps
@@ -61,22 +60,28 @@ class FrozenBatchNorm2d(torch.nn.Module):
         self.register_buffer("running_var", torch.ones(num_features))
 
     def _load_from_state_dict(
-            self,
-            state_dict: dict,
-            prefix: str,
-            local_metadata: dict,
-            strict: bool,
-            missing_keys: List[str],
-            unexpected_keys: List[str],
-            error_msgs: List[str],
+        self,
+        state_dict: dict,
+        prefix: str,
+        local_metadata: dict,
+        strict: bool,
+        missing_keys: List[str],
+        unexpected_keys: List[str],
+        error_msgs: List[str],
     ):
-        num_batches_tracked_key = prefix + 'num_batches_tracked'
+        num_batches_tracked_key = prefix + "num_batches_tracked"
         if num_batches_tracked_key in state_dict:
             del state_dict[num_batches_tracked_key]
 
         super(FrozenBatchNorm2d, self)._load_from_state_dict(
-            state_dict, prefix, local_metadata, strict,
-            missing_keys, unexpected_keys, error_msgs)
+            state_dict,
+            prefix,
+            local_metadata,
+            strict,
+            missing_keys,
+            unexpected_keys,
+            error_msgs,
+        )
 
     def forward(self, x: Tensor) -> Tensor:
         # move reshapes to the beginning
@@ -96,8 +101,14 @@ class FrozenBatchNorm2d(torch.nn.Module):
 class Linear(nn.Linear):
     def forward(self, input: torch.Tensor) -> torch.Tensor:
         if torch.jit.is_scripting():
-            bias = self.bias.to(dtype=input.dtype) if self.bias is not None else None
-            return F.linear(input, self.weight.to(dtype=input.dtype), bias=bias)
+            bias = (
+                self.bias.to(dtype=input.dtype)
+                if self.bias is not None
+                else None
+            )
+            return F.linear(
+                input, self.weight.to(dtype=input.dtype), bias=bias
+            )
         else:
             return F.linear(input, self.weight, self.bias)
 
@@ -105,7 +116,11 @@ class Linear(nn.Linear):
 class backboneNet_efficient(nn.Module):
     def __init__(self):
         super(backboneNet_efficient, self).__init__()
-        net = timm.create_model('tf_efficientnet_b4_ns', pretrained=True, norm_layer=FrozenBatchNorm2d)
+        net = timm.create_model(
+            "tf_efficientnet_b4_ns",
+            pretrained=True,
+            norm_layer=FrozenBatchNorm2d,
+        )
         self.num_features = 1792
         self.conv_stem = net.conv_stem.requires_grad_(False)
         self.bn1 = net.bn1.requires_grad_(False)
@@ -142,7 +157,7 @@ class backboneNet_efficient(nn.Module):
         x12 = self.bn2(x11)
         x13 = self.act2(x12)
         x14 = self.global_pool(x13)
-        if self.drop_rate > 0.:
+        if self.drop_rate > 0.0:
             x14 = F.dropout(x14, p=self.drop_rate, training=self.training)
 
         x15 = self.rg_cls(x14)
@@ -150,4 +165,3 @@ class backboneNet_efficient(nn.Module):
         x17 = self.ord_cls(x14)
 
         return x15, x16, x17
-

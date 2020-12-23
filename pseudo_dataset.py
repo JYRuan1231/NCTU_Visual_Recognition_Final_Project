@@ -36,6 +36,7 @@ import pseudo_config as cfg
 def Image_loader(path):
     return cv2.imread(path)
 
+
 def crop_image_from_gray(img, tol=7):
     if img is None:
         print(img)
@@ -47,7 +48,9 @@ def crop_image_from_gray(img, tol=7):
         mask = gray_img > tol
 
         check_shape = img[:, :, 0][np.ix_(mask.any(1), mask.any(0))].shape[0]
-        if (check_shape == 0):  # image is too dark so that we crop out everything,
+        if (
+            check_shape == 0
+        ):  # image is too dark so that we crop out everything,
             return img  # return original image
         else:
             img1 = img[:, :, 0][np.ix_(mask.any(1), mask.any(0))]
@@ -60,19 +63,31 @@ def crop_image_from_gray(img, tol=7):
 
 
 class PseudoDataset(Dataset):
-    def __init__(self, csv_file, file_id, transform=None, loader=Image_loader, mode=None, id_conversion=None):
+    def __init__(
+        self,
+        csv_file,
+        file_id,
+        transform=None,
+        loader=Image_loader,
+        mode=None,
+        id_conversion=None,
+    ):
         super(PseudoDataset, self).__init__()
         imgs = []
-        with open(csv_file, newline='') as csvfile:
+        with open(csv_file, newline="") as csvfile:
             rows = csv.DictReader(csvfile)
             for row in rows:
-                if id_conversion[row['id_code']] in file_id:
-                    if mode != 'pseudo':
-                        img_path = './data/train_images/' + row['id_code'] + '.jpeg'
+                if id_conversion[row["id_code"]] in file_id:
+                    if mode != "pseudo":
+                        img_path = (
+                            "./data/train_images/" + row["id_code"] + ".jpeg"
+                        )
                     else:
-                        img_path = './data/test_images/' + row['id_code'] + '.png'
-                    label = row['diagnosis']
-                    imgs.append((img_path, int(label)))   
+                        img_path = (
+                            "./data/test_images/" + row["id_code"] + ".png"
+                        )
+                    label = row["diagnosis"]
+                    imgs.append((img_path, int(label)))
         self.imgs = imgs
         self.transform = transform
         self.loader = loader

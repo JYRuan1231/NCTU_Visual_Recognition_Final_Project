@@ -15,7 +15,7 @@ test_csv = "./data/test.csv"
 ##################################################
 
 
-submission_csv = 'submission.csv'
+submission_csv = "submission.csv"
 
 # Ensemble learning model name
 model_1 = "efficientb4_v1"

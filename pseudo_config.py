@@ -39,6 +39,6 @@ eta_min = 1e-5
 # pseudo label Testing Config
 # ##################################################
 pseudo_csv = "./data/pseudo_label.csv"
-pseudo_model_name = 'pseudo_efficientb4_v1.pth'
+pseudo_model_name = "pseudo_efficientb4_v1.pth"
 result_pth = "./data/"
 test_result = "pseudo_label.json"
