@@ -3,6 +3,8 @@
 ## Introduction
 The project is training an accurate classification neteork using Efficientnet-B4 for [APTOS 2019 Blindness Detection](https://www.kaggle.com/c/aptos2019-blindness-detection).
 
+[Kaggle notebook link](https://www.kaggle.com/bohau0856095/notebooka4cf7f3c4d)
+
 ## Usage
 We training and testing with Python 3.6, pytorch 1.4 and **Need** to reference [timm](https://github.com/rwightman/pytorch-image-models).
 
